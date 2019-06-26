@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+	<div ng-app="myApp" ng-controller="myCtrl" class="container">
+
+		<ul ng-model="selectCourse" >
+		{{ list }} {{ $scope.selectCourse}}
+		</ul>
+	</div>
+	<script>
+
+	
+	var app = angular.module('myApp', []);
+	app.controller('myCtrl', function($scope, $http) {
+		/**************************Batch Fetch************************/
+		var list='<table>';
+		function loadBatch(){
+			  $http({
+				    method : "GET",
+				      url : "/api/routine"
+				  }).then(function mySuccess(response) {
+					  for (var key in response.data) {
+						  if (response.data.hasOwnProperty(key)) {
+							  list+= '  <tr>' ;
+							  var hhhhh=response.data[key];
+							 // alert(key);
+							 // alert(response.data[key][0]);
+							  
+							  for (var property in response.data[key]) {
+								  if (response.data[key].hasOwnProperty(property)) {
+									  //alert(response.data[key][property].assign_id);
+									  list+='<td>'+response.data[key][property].assign_id+"     "+'</td>';
+								  }
+								}
+							  list+= '</tr>' ;
+						  }
+						}
+					  list+='</table>';
+					 // $scope.selectCourse=list;
+					 // $scope.selectCourse.push(list);
+					  alert(list);
+					
+				  }, function myError(response) {
+				    $scope.myWelcome = response.statusText;
+				  });
+		};
+		loadBatch();
+
+	  
+	});
+	
+
+	</script>
+</body>
+</html>
+

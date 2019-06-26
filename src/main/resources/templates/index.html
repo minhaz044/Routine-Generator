@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Bootstrap Example</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+	<div ng-app="myApp" ng-controller="myCtrl" class="container">
+
+
+		<form>
+			<div class="form-group">
+				<label for="selectBatch">Select Batch:</label>
+				 <select class="custom-select" ng-model="selectBatch"
+				ng-options="batch.batch_id as batch.batch_name for batch in batches" ng-change="changeBatch()">
+				</select>
+				<label for="selectTeacher">Select Couirse:</label>
+				 <select class="custom-select" ng-model="selectCourse"
+				ng-options="course.course_id as course.course_name for course in courses" ng-change="changeCourse()">
+				</select>
+				
+				<label for="selectTeacher">Select Teacher:</label>
+				<select class="custom-select" ng-model="selectTeacher"
+				ng-options="teacher.teacher_id as teacher.teacher_name for teacher in teachers" >
+				</select>
+				
+			</div>
+			
+			
+			
+			<button  ng-click="onClickBtnSubmit()">Submit</button>
+			<button  ng-click="onClickBtnGenerateRoutine()">Generate Routine</button>
+		</form>
+
+
+
+	</div>
+	<script>
+	var app = angular.module('myApp', []);
+	app.controller('myCtrl', function($scope, $http) {
+		/**************************Batch Fetch************************/
+		function loadBatch(){
+			  $http({
+				    method : "GET",
+				      url : "api/batch"
+				  }).then(function mySuccess(response) {
+					  $scope.batches = response.data;
+				  }, function myError(response) {
+				    $scope.myWelcome = response.statusText;
+				  });
+		};
+		loadBatch();
+
+		/**************************Batch Course************************/
+
+	  $scope.changeBatch=function(){
+		  $http({
+			    method : "GET",
+			      url :"/api/course/"+$scope.selectBatch,
+			  }).then(function mySuccess(response) {
+				  $scope.courses = response.data;
+			  }, function myError(response) {
+			    $scope.myWelcome = response.statusText;
+			  }); 
+	  };
+		/**************************Batch Teacher************************/
+
+ 	  $scope.changeCourse=function(){
+ 		  $http({
+ 			    method : "GET",
+ 			      url :"/api/teacher",
+ 			  }).then(function mySuccess(response) {
+ 				  $scope.teachers = response.data;
+ 			  }, function myError(response) {
+ 			    $scope.myWelcome = response.statusText;
+ 			  });
+	  }; 
+	/**************************Submit Button**********************/
+	$scope.onClickBtnSubmit=function(){
+		var assign={
+				"batch_id":$scope.selectBatch,
+				"course_id":$scope.selectCourse,
+				"teacher_id":$scope.selectTeacher,
+				"flag":0
+		};
+		  $http({
+			  method: 'POST',
+			  url:"/api/assigncourse",
+			  data: JSON.stringify(assign)
+			})
+			.then(function (success) {
+			  alert("Data Submited SucessFully");
+			 // loadBatch();
+			 // $scope.teachers=[];
+			 // $scope.courses=[];
+			  window.location.reload() ;
+			}, function (error) {
+			  alert(error.data);
+			});
+		 // window.location.reload() 
+		  //load();
+		  //loadBatch();
+	};
+	
+	
+	/**********************************Generate Routine Btn*********************/
+	$scope.onClickBtnGenerateRoutine=function(){
+		window.location.pathname = "/routine";
+
+	
+	};
+
+	  
+	  
+	  
+	});
+	
+
+	</script>
+</body>
+</html>
+
